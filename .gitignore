@@ -1,0 +1,6 @@
+node_modules/
+/practice-1/.env
+target/
+practice-1/target
+.idea
+practice-1/.idea
