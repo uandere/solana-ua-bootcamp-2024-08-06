@@ -1,46 +1,13 @@
-mod r#create
-
-use std::env::VarError;
 use std::str::FromStr;
 
-use dotenv::dotenv;
-use solana_client::client_error::ClientError;
 use solana_client::rpc_client::RpcClient;
 use solana_program::native_token::LAMPORTS_PER_SOL;
-use solana_program::pubkey::{ParsePubkeyError, Pubkey};
+use solana_program::pubkey::Pubkey;
 use solana_program::system_instruction::transfer;
 use solana_sdk::signature::{Keypair, Signature, Signer};
 use solana_sdk::transaction::Transaction;
-use thiserror::Error;
 
-#[derive(Debug, Error)]
-pub enum Error {
-    #[error(transparent)]
-    ParsePubkey(#[from] ParsePubkeyError),
-    #[error(transparent)]
-    Client(#[from] ClientError),
-    #[error(transparent)]
-    Var(#[from] VarError),
-    #[error(transparent)]
-    BadKeypair(#[from] ed25519_dalek::SignatureError),
-    #[error(transparent)]
-    Other(#[from] serde_json::Error),
-}
-
-/// Loads keypair from `.env` file.
-/// `.env` file is expected to be inside the current working directory.
-pub fn load_keypair() -> Result<Keypair, Error> {
-    dotenv().ok();
-    let secret_key = std::env::var("SECRET_KEY")?;
-
-    let secret_key_bytes: Vec<u8> = serde_json::from_str(&secret_key)?;
-
-    let secret_key_array: [u8; 64] = secret_key_bytes.try_into().expect("Expected 64 bytes");
-
-    let keypair = Keypair::from_bytes(&secret_key_array)?;
-
-    Ok(keypair)
-}
+use practice_2::{Error, load_keypair};
 
 pub fn send_sol_with_memo(
     client: &RpcClient,

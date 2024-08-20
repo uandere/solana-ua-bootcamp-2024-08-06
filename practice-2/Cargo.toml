@@ -7,6 +7,10 @@ edition = "2021"
 name="send-sol"
 path = "src/send-sol.rs"
 
+[[bin]]
+name="create-token-mint"
+path = "src/create-token-mint.rs"
+
 [dependencies]
 dotenv = "0.15.0"
 solana-client = "2.0.5"
