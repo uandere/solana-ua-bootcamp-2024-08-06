@@ -1,0 +1,19 @@
+[package]
+name = "practice-2"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name="send-sol"
+path = "src/send-sol.rs"
+
+[dependencies]
+dotenv = "0.15.0"
+solana-client = "2.0.5"
+solana-program = "2.0.5"
+solana-sdk = "2.0.5"
+thiserror = "1.0.63"
+serde_json = "1.0.125"
+anyhow = "1.0.86"
+ed25519-dalek = "1.0.0"
+spl-memo = "5.0.0"
