@@ -16,7 +16,9 @@ pub enum Error {
     #[error(transparent)]
     BadKeypair(#[from] ed25519_dalek::SignatureError),
     #[error(transparent)]
-    Other(#[from] serde_json::Error),
+    ProgramError(#[from] solana_sdk::program_error::ProgramError),
+    #[error(transparent)]
+    Serialization(#[from] serde_json::Error),
 }
 
 /// Loads keypair from `.env` file.
