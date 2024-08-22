@@ -11,6 +11,14 @@ path = "src/send-sol.rs"
 name="create-token-mint"
 path = "src/create-token-mint.rs"
 
+[[bin]]
+name="mint-tokens"
+path = "src/mint-tokens.rs"
+
+[[bin]]
+name="create-token-account"
+path = "src/create-token-account.rs"
+
 [dependencies]
 dotenv = "0.15.0"
 solana-client = "2.0.5"
@@ -22,3 +30,4 @@ anyhow = "1.0.86"
 ed25519-dalek = "1.0.0"
 spl-memo = "5.0.0"
 spl-token = "6.0.0"
+spl-associated-token-account = "4.0.0"

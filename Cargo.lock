@@ -2236,7 +2236,9 @@ dependencies = [
  "solana-client",
  "solana-program",
  "solana-sdk",
+ "spl-associated-token-account",
  "spl-memo",
+ "spl-token",
  "thiserror",
 ]
 
