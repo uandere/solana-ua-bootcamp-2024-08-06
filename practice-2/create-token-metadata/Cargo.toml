@@ -1,0 +1,18 @@
+[workspace]
+
+[package]
+name = "create-token-metadata"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dotenv = "0.15.0"
+solana-client = "1.18.22"
+solana-program = "1.18.22"
+solana-sdk = "1.18.22"
+thiserror = "1.0.63"
+ed25519-dalek = "1.0.1"
+serde_json = "1.0.125"
+mpl-token-metadata = "4.1.2"
