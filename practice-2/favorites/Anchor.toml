@@ -5,7 +5,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-solana_nft_anchor = "4BsMpWZvHvJKRuTzkRX9ocNj3BxkcGZZnYw8miiWyUoz"
+favorites = "8uvJrNtywsBSJWHzSQC349kAHujGaX7aN7xieio9fSy7"
 
 [registry]
 url = "https://api.apr.dev"
