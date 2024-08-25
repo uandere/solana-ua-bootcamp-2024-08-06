@@ -19,7 +19,7 @@ const sender = Keypair.fromSecretKey(asArray);
 const connection = new Connection(clusterApiUrl("devnet"));
 
 console.log(
-    `🔑 Our pubic key is: ${sender.publicKey.toBase58()}`
+    `🔑 Our public key is: ${sender.publicKey.toBase58()}`
 );
 
 
