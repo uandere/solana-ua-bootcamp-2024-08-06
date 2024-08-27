@@ -9,9 +9,12 @@ import {
     LAMPORTS_PER_SOL
 } from "@solana/web3.js";
 import {
-    createMintToInstruction, createTransferInstruction, getOrCreateAssociatedTokenAccount, mintTo,
+    createTransferCheckedInstruction,
+    getOrCreateAssociatedTokenAccount,
+    mintTo,
 } from "@solana/spl-token";
 import {airdropIfRequired, getExplorerLink} from "@solana-developers/helpers";
+import bs58 from 'bs58';
 
 
 // CONSTANTS
@@ -69,12 +72,12 @@ console.log("Bob's public key: ", bob.publicKey)
 
 // ATTENTION: UNCOMMENT THIS FOR THE FIRST TIME WHEN BOB HAS NO MONEY
 
-await airdropIfRequired(
-    connection,
-    bob.publicKey,
-    LAMPORTS_PER_SOL,
-    0.5 * LAMPORTS_PER_SOL
-);
+// await airdropIfRequired(
+//     connection,
+//     bob.publicKey,
+//     LAMPORTS_PER_SOL,
+//     0.5 * LAMPORTS_PER_SOL
+// );
 
 const bobTokenAccount = await getOrCreateAssociatedTokenAccount(connection, bob, mint, bob.publicKey);
 // ===========================================================================
@@ -97,29 +100,32 @@ await mintTo(
 const transaction = new Transaction();
 
 transaction.add(
-    createTransferInstruction(
-        aliceTokenAccount.address,
-        bobTokenAccount.address,
-        alice.publicKey,
-        5 * MINOR_UNITS_PER_MAJOR_UNITS
+    createTransferCheckedInstruction(
+        aliceTokenAccount.address, // source
+        mint, // mint
+        bobTokenAccount.address, // destination
+        alice.publicKey, // owner of source account
+        5 * MINOR_UNITS_PER_MAJOR_UNITS, // amount to transfer
+        2 // decimals of token
     )
-)
+);
 
+
+// ...Sending it to Bob...
 transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
 transaction.feePayer = bob.publicKey;
 
-// Signing on Alice's behalf (mint authority)
+// Signing on Bob's behalf (fee payer)
+transaction.partialSign(bob);
+//
+// // ...Sending it back to Alice...
 transaction.partialSign(alice);
 
 
-// ...Sending it to Bob...
+const serializedTransaction = transaction.serialize({requireAllSignatures: false});
 
-
-// Signing on Bob's behalf (fee payer)
-transaction.partialSign(bob);
-
-const signature = await sendAndConfirmTransaction(connection, transaction, [alice, bob]);
+const signature = await connection.sendRawTransaction(serializedTransaction)
 
 console.log("View the transaction at:", getExplorerLink("transaction", signature, "devnet"));
 
