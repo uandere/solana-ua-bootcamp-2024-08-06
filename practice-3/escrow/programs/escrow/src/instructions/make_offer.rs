@@ -8,6 +8,9 @@ use anchor_spl::{
 use crate::{Offer, ANCHOR_DISCRIMINATOR};
 
 
+/// Sends token "A" from maker ATA to Vault PDA.
+/// Uses transfer_checked() and TransferChecked to prevent 
+/// sending wrong token or wrong amount.
 pub fn send_offered_tokens_to_vault(
     context: &Context<MakeOffer>,
     token_a_offered_amount: u64,
@@ -31,6 +34,8 @@ pub fn send_offered_tokens_to_vault(
     )
 }
 
+
+/// Saves the offer by providing token_b_wanted_amount
 pub fn save_offer(context: Context<MakeOffer>, id: u64, token_b_wanted_amount: u64) -> Result<()> {
     context.accounts.offer.set_inner(Offer {
         id,

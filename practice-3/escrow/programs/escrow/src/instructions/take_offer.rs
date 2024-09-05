@@ -10,6 +10,7 @@ use anchor_spl::{
 
 use crate::Offer;
 
+/// Sends the offered amount of token B from taker to maker.
 pub fn send_wanted_tokens_to_maker(ctx: &Context<TakeOffer>) -> Result<()> {
     let transfer_accounts = TransferChecked {
         from: ctx.accounts.taker_token_account_b.to_account_info(),
@@ -30,7 +31,8 @@ pub fn send_wanted_tokens_to_maker(ctx: &Context<TakeOffer>) -> Result<()> {
     )
 }
 
-
+/// Tramsfers token A from vault to taker.
+/// Closes vault afterwards.
 pub fn withdraw_and_close_vault(ctx: Context<TakeOffer>) -> Result<()> {
     let signer_seeds: [&[&[u8]]; 1] = [&[
         b"offer",
@@ -119,8 +121,8 @@ pub struct TakeOffer<'info> {
         has_one = maker,
         has_one = token_mint_a,
         has_one = token_mint_b,
-    // seeds = [b"offer", maker.key().as_ref(), offer.id.to_le_bytes().as_ref()],
-    // bump = offer.bump
+        // seeds = [b"offer", maker.key().as_ref(), offer.id.to_le_bytes().as_ref()],
+        // bump = offer.bump
     )]
     offer: Account<'info, Offer>,
     #[account(
