@@ -72,10 +72,14 @@ pub struct TakeOffer<'info> {
 }
 
 pub fn delegate_needed_tokens_to_program(context: &Context<TakeOffer>) -> Result<()> {
-    // Construct the seeds used for signing the CPI call
-    let offer_id_bytes = context.accounts.offer.id.to_le_bytes();
-    let maker_key_bytes = context.accounts.maker.key().to_bytes();
-    let seeds = [&b"offer"[..], &maker_key_bytes[..], &offer_id_bytes[..]];
+    let binding = context.accounts.maker.key();
+
+    let seeds: &[&[u8]] = &[
+        b"offer",
+        binding.as_ref(),
+        &context.accounts.offer.id.to_le_bytes(),
+        &[context.accounts.offer.bump],
+    ];
 
     let signer_seeds = &[&seeds[..]];
 
@@ -98,9 +102,14 @@ pub fn delegate_needed_tokens_to_program(context: &Context<TakeOffer>) -> Result
 
 pub fn resolve_offer(context: &Context<TakeOffer>) -> Result<()> {
 
-    let offer_id_bytes = context.accounts.offer.id.to_le_bytes();
-    let maker_key_bytes = context.accounts.maker.key().to_bytes();
-    let seeds = [&b"offer"[..], &maker_key_bytes[..], &offer_id_bytes[..]];
+    let binding = context.accounts.maker.key();
+
+    let seeds: &[&[u8]] = &[
+        b"offer",
+        binding.as_ref(),
+        &context.accounts.offer.id.to_le_bytes(),
+        &[context.accounts.offer.bump],
+    ];
 
     let signer_seeds = &[&seeds[..]];
 
