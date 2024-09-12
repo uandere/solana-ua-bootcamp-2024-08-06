@@ -72,13 +72,21 @@ pub struct TakeOffer<'info> {
 }
 
 pub fn delegate_needed_tokens_to_program(context: &Context<TakeOffer>) -> Result<()> {
-    let ctx = CpiContext::new(
+    // Construct the seeds used for signing the CPI call
+    let offer_id_bytes = context.accounts.offer.id.to_le_bytes();
+    let maker_key_bytes = context.accounts.maker.key().to_bytes();
+    let seeds = [&b"offer"[..], &maker_key_bytes[..], &offer_id_bytes[..]];
+
+    let signer_seeds = &[&seeds[..]];
+
+    let ctx = CpiContext::new_with_signer(
         context.accounts.token_program.to_account_info(),
         Approve {
             to: context.accounts.taker_token_account_b.to_account_info(),
             delegate: context.accounts.offer.to_account_info(),
             authority: context.accounts.taker.to_account_info(),
         },
+        signer_seeds,
     );
 
     approve(
@@ -87,7 +95,15 @@ pub fn delegate_needed_tokens_to_program(context: &Context<TakeOffer>) -> Result
     )
 }
 
+
 pub fn resolve_offer(context: &Context<TakeOffer>) -> Result<()> {
+
+    let offer_id_bytes = context.accounts.offer.id.to_le_bytes();
+    let maker_key_bytes = context.accounts.maker.key().to_bytes();
+    let seeds = [&b"offer"[..], &maker_key_bytes[..], &offer_id_bytes[..]];
+
+    let signer_seeds = &[&seeds[..]];
+
     // Sending token B to maker
     let transfer_accounts_a = TransferChecked {
         from: context.accounts.taker_token_account_b.to_account_info(),
@@ -95,18 +111,19 @@ pub fn resolve_offer(context: &Context<TakeOffer>) -> Result<()> {
         to: context.accounts.maker_token_account_b.to_account_info(),
         authority: context.accounts.offer.to_account_info(),
     };
-    
-    let cpi_ctx = CpiContext::new(
+
+    let cpi_ctx_a = CpiContext::new_with_signer(
         context.accounts.token_program.to_account_info(),
         transfer_accounts_a,
+        signer_seeds,
     );
-    
+
     transfer_checked(
-        cpi_ctx,
+        cpi_ctx_a,
         context.accounts.offer.token_b_wanted_amount,
         context.accounts.token_mint_b.decimals,
     )?;
-    
+
     // Sending token A to taker
     let transfer_accounts_b = TransferChecked {
         from: context.accounts.maker_token_account_a.to_account_info(),
@@ -114,14 +131,15 @@ pub fn resolve_offer(context: &Context<TakeOffer>) -> Result<()> {
         to: context.accounts.taker_token_account_a.to_account_info(),
         authority: context.accounts.offer.to_account_info(),
     };
-    
-    let cpi_ctx = CpiContext::new(
+
+    let cpi_ctx_b = CpiContext::new_with_signer(
         context.accounts.token_program.to_account_info(),
         transfer_accounts_b,
+        signer_seeds,
     );
-    
+
     transfer_checked(
-        cpi_ctx,
+        cpi_ctx_b,
         context.accounts.offer.token_a_offered_amount,
         context.accounts.token_mint_a.decimals
     )

@@ -41,13 +41,27 @@ pub fn delegate_offered_tokens_to_program(
     token_a_offered_amount: u64,
     token_b_wanted_amount: u64,
 ) -> Result<()> {
-    let ctx = CpiContext::new(
+
+    let binding = context.accounts.maker.key();
+    
+    let seeds: &[&[u8]] = &[
+        b"offer",
+        binding.as_ref(),
+        &id.to_le_bytes(),
+        &[context.bumps.offer],
+    ];
+
+    let signer_seeds = &[&seeds[..]];
+
+
+    let ctx = CpiContext::new_with_signer(
         context.accounts.token_program.to_account_info(),
         Approve {
             to: context.accounts.maker_token_account_a.to_account_info(),
             delegate: context.accounts.offer.to_account_info(),
             authority: context.accounts.maker.to_account_info(),
         },
+        signer_seeds,
     );
 
     approve(
